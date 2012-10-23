@@ -33,7 +33,11 @@
 
 
 + (PKDelimitedString *)delimitedStringWithStartMarker:(NSString *)start endMarker:(NSString *)end {
+#if __has_feature(objc_arc)
+    PKDelimitedString *ds = [[self alloc] initWithString:nil];
+#else
     PKDelimitedString *ds = [[[self alloc] initWithString:nil] autorelease];
+#endif
     ds.startMarker = start;
     ds.endMarker = end;
     return ds;
@@ -43,7 +47,9 @@
 - (void)dealloc {
     self.startMarker = nil;
     self.endMarker = nil;
+#if !__has_feature(objc_arc)
     [super dealloc];
+#endif
 }
 
 

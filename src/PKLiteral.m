@@ -22,7 +22,11 @@
 @implementation PKLiteral
 
 + (PKLiteral *)literalWithString:(NSString *)s {
+#if __has_feature(objc_arc)
+    return [[self alloc] initWithString:s];
+#else
     return [[[self alloc] initWithString:s] autorelease];
+#endif
 }
 
 
@@ -38,7 +42,9 @@
 
 - (void)dealloc {
     self.literal = nil;
+#if !__has_feature(objc_arc)
     [super dealloc];
+#endif
 }
 
 

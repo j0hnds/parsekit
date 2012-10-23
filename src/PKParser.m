@@ -34,7 +34,11 @@
 @implementation PKParser
 
 + (PKParser *)parser {
+#if __has_feature(objc_arc)
+    return [[self alloc] init];
+#else
     return [[[self alloc] init] autorelease];
+#endif
 }
 
 
@@ -47,7 +51,9 @@
     self.preassemblerSelector = nil;
     self.name = nil;
     self.tokenizer = nil;
+#if !__has_feature(objc_arc)
     [super dealloc];
+#endif
 }
 
 
@@ -107,7 +113,10 @@
     } else if (preassembler) {
         NSAssert2([preassembler respondsToSelector:preassemblerSelector], @"provided preassembler %@ should respond to %@", preassembler, NSStringFromSelector(preassemblerSelector));
         for (PKAssembly *a in inAssemblies) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
             [preassembler performSelector:preassemblerSelector withObject:self withObject:a];
+#pragma clang diagnostic pop
         }
     }
     
@@ -135,7 +144,10 @@
 #if CONCURRENT
             dispatch_group_async(myGroup, queue, ^{
 #endif
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
                 [assembler performSelector:assemblerSelector withObject:self withObject:a];
+#pragma clang diagnostic pop
 #if CONCURRENT
             });
             dispatch_group_wait(myGroup, DISPATCH_TIME_FOREVER);
@@ -219,7 +231,11 @@
             NSString *domain = exName ? exName : @"PKParseException";
             
             // convert to NSError
+#if __has_feature(objc_arc)
+            NSError *err = [NSError errorWithDomain:domain code:47 userInfo:[userInfo copy]];
+#else
             NSError *err = [NSError errorWithDomain:domain code:47 userInfo:[[userInfo copy] autorelease]];
+#endif
             *outError = err;
         } else {
             [ex raise];
@@ -229,14 +245,22 @@
 
 
 - (PKTokenizer *)tokenizer {
+#if __has_feature(objc_arc)
+    return tokenizer;
+#else
     return [[tokenizer retain] autorelease];
+#endif
 }
 
 
 - (void)setTokenizer:(PKTokenizer *)t {
     if (tokenizer != t) {
+#if __has_feature(objc_arc)
+        tokenizer = t;
+#else
         [tokenizer autorelease];
         tokenizer = [t retain];
+#endif
     }
 }
 

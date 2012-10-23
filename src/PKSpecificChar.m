@@ -18,7 +18,11 @@
 @implementation PKSpecificChar
 
 + (PKSpecificChar *)specificCharWithChar:(PKUniChar)c {
+#if __has_feature(objc_arc)
+    return [[self alloc] initWithSpecificChar:c];
+#else
     return [[[self alloc] initWithSpecificChar:c] autorelease];
+#endif
 }
 
 

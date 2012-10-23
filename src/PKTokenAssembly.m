@@ -28,12 +28,20 @@
 @implementation PKTokenAssembly
 
 + (PKTokenAssembly *)assemblyWithTokenizer:(PKTokenizer *)t {
+#if __has_feature(objc_arc)
+    return [[self alloc] initWithTokenzier:t];
+#else
     return [[[self alloc] initWithTokenzier:t] autorelease];
+#endif
 }
 
 
 + (PKTokenAssembly *)assemblyWithTokenArray:(NSArray *)a {
+#if __has_feature(objc_arc)
+    return [[self alloc] initWithTokenArray:a];
+#else
     return [[[self alloc] initWithTokenArray:a] autorelease];
+#endif
 }
 
 
@@ -53,7 +61,11 @@
 
 
 - (id)initWithString:(NSString *)s {
+#if __has_feature(objc_arc)
+    return [self initWithTokenzier:[[PKTokenizer alloc] initWithString:s]];
+#else
     return [self initWithTokenzier:[[[PKTokenizer alloc] initWithString:s] autorelease]];
+#endif
 }
 
 
@@ -74,7 +86,9 @@
 - (void)dealloc {
     self.tokenizer = nil;
     self.tokens = nil;
+#if !__has_feature(objc_arc)
     [super dealloc];
+#endif
 }
 
 
@@ -200,7 +214,11 @@
         }
     }
     
+#if __has_feature(objc_arc)
+    return [s copy];
+#else
     return [[s copy] autorelease];
+#endif
 }
 
 @synthesize tokenizer;

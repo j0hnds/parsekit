@@ -132,7 +132,11 @@ typedef void (^PKAssemblerBlock)(PKParser *, PKAssembly *);
     @brief      The assembler this parser will use to work on a matched assembly.
     @details    <tt>assembler</tt> should respond to the selector held by this parser's <tt>selector</tt> property.
 */
+#if __has_feature(objc_arc)
+@property (nonatomic, retain) id assembler;
+#else
 @property (nonatomic, assign) id assembler;
+#endif
 
 /*!
     @property   assemblerSelector
@@ -146,7 +150,11 @@ typedef void (^PKAssemblerBlock)(PKParser *, PKAssembly *);
     @brief      The assembler this parser will use to work on an assembly before matching against it.
     @discussion <tt>preassembler</tt> should respond to the selector held by this parser's <tt>preassemblerSelector</tt> property.
 */
+#if __has_feature(objc_arc)
+@property (nonatomic, retain) id preassembler;
+#else
 @property (nonatomic, assign) id preassembler;
+#endif
 
 /*!
     @property   preAssemlerSelector

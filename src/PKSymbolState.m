@@ -39,7 +39,11 @@
 
 - (id)init {
     if (self = [super init]) {
+#if __has_feature(objc_arc)
+        self.rootNode = [[PKSymbolRootNode alloc] init];
+#else
         self.rootNode = [[[PKSymbolRootNode alloc] init] autorelease];
+#endif
         self.addedSymbols = [NSMutableArray array];
     }
     return self;
@@ -49,7 +53,9 @@
 - (void)dealloc {
     self.rootNode = nil;
     self.addedSymbols = nil;
+#if !__has_feature(objc_arc)
     [super dealloc];
+#endif
 }
 
 

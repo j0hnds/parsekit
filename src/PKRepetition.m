@@ -26,7 +26,11 @@
 @implementation PKRepetition
 
 + (PKRepetition *)repetitionWithSubparser:(PKParser *)p {
+#if __has_feature(objc_arc)
+    return [[self alloc] initWithSubparser:p];
+#else
     return [[[self alloc] initWithSubparser:p] autorelease];
+#endif
 }
 
 
@@ -46,7 +50,9 @@
 
 - (void)dealloc {
     self.subparser = nil;
+#if !__has_feature(objc_arc)
     [super dealloc];
+#endif
 }
 
 
@@ -62,7 +68,11 @@
 - (NSSet *)allMatchesFor:(NSSet *)inAssemblies {
     NSParameterAssert(inAssemblies);
     //NSMutableSet *outAssemblies = [[[NSMutableSet alloc] initWithSet:inAssemblies copyItems:YES] autorelease];
+#if __has_feature(objc_arc)
+    NSMutableSet *outAssemblies = [inAssemblies mutableCopy];
+#else
     NSMutableSet *outAssemblies = [[inAssemblies mutableCopy] autorelease];
+#endif
     
     NSSet *s = inAssemblies;
     while ([s count]) {

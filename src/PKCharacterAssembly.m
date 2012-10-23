@@ -40,7 +40,9 @@
 
 
 - (void)dealloc {
+#if !__has_feature(objc_arc)
     [super dealloc];
+#endif
 }
 
 
@@ -125,7 +127,11 @@
     [s appendString:@"^"];
     [s appendString:[self remainingObjectsJoinedByString:self.defaultDelimiter]];
     
+#if __has_feature(objc_arc)
+    return [s copy];
+#else
     return [[s copy] autorelease];
+#endif
 }
 
 @end

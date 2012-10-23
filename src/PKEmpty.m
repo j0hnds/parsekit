@@ -17,7 +17,11 @@
 @implementation PKEmpty
 
 + (PKEmpty *)empty {
+#if __has_feature(objc_arc)
+    return [[self alloc] init];
+#else
     return [[[self alloc] init] autorelease];
+#endif
 }
 
 

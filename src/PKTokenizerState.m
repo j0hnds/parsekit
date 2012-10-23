@@ -41,7 +41,9 @@
     self.stringbuf = nil;
     self.fallbackState = nil;
     self.fallbackStates = nil;
+#if !__has_feature(objc_arc)
     [super dealloc];
+#endif
 }
 
 
@@ -91,7 +93,11 @@
 
 
 - (NSString *)bufferedString {
+#if __has_feature(objc_arc)
+    return [stringbuf copy];
+#else
     return [[stringbuf copy] autorelease];
+#endif
 }
 
 

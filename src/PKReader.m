@@ -32,18 +32,26 @@
 - (void)dealloc {
     self.string = nil;
     //if (buff) free(buff);
+#if !__has_feature(objc_arc)
     [super dealloc];
+#endif
 }
 
 
 - (NSString *)string {
+#if __has_feature(objc_arc)
+    return string;
+#else
     return [[string retain] autorelease];
+#endif
 }
 
 
 - (void)setString:(NSString *)s {
     if (string != s) {
+#if !__has_feature(objc_arc)
         [string autorelease];
+#endif
         string = [s copy];
         length = [string length];
 

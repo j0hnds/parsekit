@@ -58,7 +58,9 @@
     self.startMarkers = nil;
     self.endMarkers = nil;
     self.currentStartMarker = nil;
+#if !__has_feature(objc_arc)
     [super dealloc];
+#endif
 }
 
 

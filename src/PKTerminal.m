@@ -47,7 +47,9 @@
 
 - (void)dealloc {
     self.string = nil;
+#if !__has_feature(objc_arc)
     [super dealloc];
+#endif
 }
 
 
@@ -75,7 +77,11 @@
     PKAssembly *outAssembly = nil;
     
     if ([self qualifies:[inAssembly peek]]) {
+#if __has_feature(objc_arc)
+        outAssembly = [inAssembly copy];
+#else
         outAssembly = [[inAssembly copy] autorelease];
+#endif
         id obj = [outAssembly next];
         if (!discardFlag) {
             [outAssembly push:obj];

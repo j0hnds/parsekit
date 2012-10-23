@@ -44,7 +44,9 @@
     self.tokenizer = nil;
     self.delimiter = nil;
     self.nextToken = nil;
+#if !__has_feature(objc_arc)
     [super dealloc];
+#endif
 }
 
 

@@ -89,7 +89,9 @@
     self.literalParser = nil;
     self.variableParser = nil;
     self.constantParser = nil;
+#if !__has_feature(objc_arc)
     [super dealloc];
+#endif
 }
 
 

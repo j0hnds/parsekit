@@ -36,7 +36,11 @@
 
 
 + (PKTokenizer *)tokenizerWithString:(NSString *)s {
+#if __has_feature(objc_arc)
+    return [[self alloc] initWithString:s];
+#else
     return [[[self alloc] initWithString:s] autorelease];
+#endif
 }
 
 
@@ -48,6 +52,18 @@
 - (id)initWithString:(NSString *)s {
     if (self = [super init]) {
         self.string = s;
+#if __has_feature(objc_arc)
+        self.reader = [[PKReader alloc] init];
+        
+        self.numberState     = [[PKNumberState alloc] init];
+        self.quoteState      = [[PKQuoteState alloc] init];
+        self.commentState    = [[PKCommentState alloc] init];
+        self.symbolState     = [[PKSymbolState alloc] init];
+        self.whitespaceState = [[PKWhitespaceState alloc] init];
+        self.wordState       = [[PKWordState alloc] init];
+        self.delimitState    = [[PKDelimitState alloc] init];
+        self.URLState        = [[PKURLState alloc] init];
+#else
         self.reader = [[[PKReader alloc] init] autorelease];
         
         self.numberState     = [[[PKNumberState alloc] init] autorelease];
@@ -58,6 +74,7 @@
         self.wordState       = [[[PKWordState alloc] init] autorelease];
         self.delimitState    = [[[PKDelimitState alloc] init] autorelease];
         self.URLState        = [[[PKURLState alloc] init] autorelease];
+#endif
 #if PK_PLATFORM_EMAIL_STATE
         self.emailState      = [[[PKEmailState alloc] init] autorelease];
 #endif
@@ -131,7 +148,9 @@
     self.twitterState = nil;
     self.hashtagState = nil;
 #endif
+#if !__has_feature(objc_arc)
     [super dealloc];
+#endif
 }
 
 
@@ -180,8 +199,12 @@
 
 - (void)setReader:(PKReader *)r {
     if (reader != r) {
+#if __has_feature(objc_arc)
+        reader = r;
+#else
         [reader autorelease];
         reader = [r retain];
+#endif
         reader.string = string;
     }
 }
@@ -189,8 +212,12 @@
 
 - (void)setString:(NSString *)s {
     if (string != s) {
+#if __has_feature(objc_arc)
+        string = s;
+#else
         [string autorelease];
         string = [s retain];
+#endif
     }
     reader.string = string;
 }

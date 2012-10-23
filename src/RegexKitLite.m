@@ -35,6 +35,7 @@
  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#if !__has_feature(objc_arc)
 
 #include <CoreFoundation/CFBase.h>
 #include <CoreFoundation/CFArray.h>
@@ -1632,3 +1633,5 @@ static NSString *rkl_stringFromClassAndMethod(id object, SEL selector, NSString 
 }
 
 @end
+
+#endif // __has_feature(objc_arc)

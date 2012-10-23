@@ -17,7 +17,11 @@
 
 @interface PKSymbolNode ()
 @property (nonatomic, readwrite, retain) NSString *ancestry;
+#if __has_feature(objc_arc)
+@property (nonatomic, retain) PKSymbolNode *parent;  // this must be 'assign' to avoid retain loop leak
+#else
 @property (nonatomic, assign) PKSymbolNode *parent;  // this must be 'assign' to avoid retain loop leak
+#endif
 @property (nonatomic, retain) NSMutableDictionary *children;
 @property (nonatomic) PKUniChar character;
 @property (nonatomic, retain) NSString *string;
@@ -48,7 +52,9 @@
     self.ancestry = nil;
     self.string = nil;
     self.children = nil;
+#if !__has_feature(objc_arc)
     [super dealloc];
+#endif
 }
 
 

@@ -23,7 +23,11 @@
 @implementation PKCollectionParser
 
 + (PKCollectionParser *)collectionParserWithFirst:(PKParser *)p1 rest:(va_list)rest {
+#if __has_feature(objc_arc)
+    PKCollectionParser *cp = [[self alloc] init];
+#else
     PKCollectionParser *cp = [[[self alloc] init] autorelease];
+#endif
     
     if (p1) {
         [cp add:p1];
@@ -67,7 +71,9 @@
 
 - (void)dealloc {
     self.subparsers = nil;
+#if !__has_feature(objc_arc)
     [super dealloc];
+#endif
 }
 
 

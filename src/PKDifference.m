@@ -21,7 +21,11 @@
 @implementation NSMutableSet (PKDifferenceAdditions)
 
 - (void)minusSetTestingEquality:(NSSet *)s {
+#if __has_feature(objc_arc)
+    for (id a1 in [self copy]) {
+#else
     for (id a1 in [[self copy] autorelease]) {
+#endif
         for (id a2 in s) {
             if ([a1 isEqual:a2]) {
                 [self removeObject:a1];
@@ -45,7 +49,11 @@
 @implementation PKDifference
 
 + (PKDifference *)differenceWithSubparser:(PKParser *)s minus:(PKParser *)m {
+#if __has_feature(objc_arc)
+    return [[self alloc] initWithSubparser:s minus:m];
+#else
     return [[[self alloc] initWithSubparser:s minus:m] autorelease];
+#endif
 }
 
 
@@ -61,7 +69,9 @@
 - (void)dealloc {
     self.subparser = nil;
     self.minus = nil;
+#if !__has_feature(objc_arc)
     [super dealloc];
+#endif
 }
 
 
@@ -93,7 +103,11 @@
 - (NSSet *)allMatchesFor:(NSSet *)inAssemblies {
     NSParameterAssert(inAssemblies);
 
+#if __has_feature(objc_arc)
+    NSMutableSet *outAssemblies = [[subparser matchAndAssemble:inAssemblies] mutableCopy];
+#else
     NSMutableSet *outAssemblies = [[[subparser matchAndAssemble:inAssemblies] mutableCopy] autorelease];
+#endif
     [outAssemblies minusSetTestingEquality:[minus allMatchesFor:inAssemblies]];
     
     return outAssemblies;

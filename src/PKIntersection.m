@@ -22,7 +22,11 @@
 @implementation NSMutableSet (PKIntersectionAdditions)
 
 - (void)intersectSetTestingEquality:(NSSet *)s {
+#if __has_feature(objc_arc)
+    for (id a1 in [self copy]) {
+#else
     for (id a1 in [[self copy] autorelease]) {
+#endif
         BOOL found = NO;
         for (id a2 in s) {
             if ([a1 isEqual:a2]) {
@@ -70,7 +74,11 @@
     NSInteger i = 0;
     for (PKParser *p in subparsers) {
         if (0 == i++) {
+#if __has_feature(objc_arc)
+            outAssemblies = [[p matchAndAssemble:inAssemblies] mutableCopy];
+#else
             outAssemblies = [[[p matchAndAssemble:inAssemblies] mutableCopy] autorelease];
+#endif
         } else {
             [outAssemblies intersectSetTestingEquality:[p allMatchesFor:inAssemblies]];
         }

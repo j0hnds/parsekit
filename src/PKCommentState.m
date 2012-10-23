@@ -54,9 +54,15 @@
 
 - (id)init {
     if (self = [super init]) {
+#if __has_feature(objc_arc)
+        self.rootNode = [[PKSymbolRootNode alloc] init];
+        self.singleLineState = [[PKSingleLineCommentState alloc] init];
+        self.multiLineState = [[PKMultiLineCommentState alloc] init];
+#else
         self.rootNode = [[[PKSymbolRootNode alloc] init] autorelease];
         self.singleLineState = [[[PKSingleLineCommentState alloc] init] autorelease];
         self.multiLineState = [[[PKMultiLineCommentState alloc] init] autorelease];
+#endif
     }
     return self;
 }
@@ -66,7 +72,9 @@
     self.rootNode = nil;
     self.singleLineState = nil;
     self.multiLineState = nil;
+#if !__has_feature(objc_arc)
     [super dealloc];
+#endif
 }
 
 

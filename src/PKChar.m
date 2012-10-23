@@ -17,7 +17,11 @@
 @implementation PKChar
 
 + (PKChar *)char {
+#if __has_feature(objc_arc)
+    return [[self alloc] initWithString:nil];
+#else
     return [[[self alloc] initWithString:nil] autorelease];
+#endif
 }
 
 

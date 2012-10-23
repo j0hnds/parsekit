@@ -11,7 +11,11 @@
 @implementation NSArray (ParseKitAdditions)
 
 - (NSArray *)reversedArray {
+#if __has_feature(objc_arc)
+    return [[self reversedMutableArray] copy];
+#else
     return [[[self reversedMutableArray] copy] autorelease];
+#endif
 }
 
 

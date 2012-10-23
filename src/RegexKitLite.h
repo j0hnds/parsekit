@@ -36,6 +36,8 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#if !__has_feature(objc_arc)
+
 #ifdef    __OBJC__
 #import <Foundation/NSArray.h>
 #import <Foundation/NSError.h>
@@ -218,3 +220,5 @@ extern NSString * const RKLICURegexRegexOptionsErrorKey;
 #ifdef __cplusplus
 }  // extern "C"
 #endif
+
+#endif // __has_feature(objc_arc)

@@ -83,7 +83,11 @@ static PKTokenEOF *EOFToken = nil;
 
 
 + (PKToken *)tokenWithTokenType:(PKTokenType)t stringValue:(NSString *)s floatValue:(PKFloat)n {
+#if __has_feature(objc_arc)
+    return [[self alloc] initWithTokenType:t stringValue:s floatValue:n];
+#else
     return [[[self alloc] initWithTokenType:t stringValue:s floatValue:n] autorelease];
+#endif
 }
 
 
@@ -116,12 +120,18 @@ static PKTokenEOF *EOFToken = nil;
 - (void)dealloc {
     self.stringValue = nil;
     self.value = nil;
+#if !__has_feature(objc_arc)
     [super dealloc];
+#endif
 }
 
 
 - (id)copyWithZone:(NSZone *)zone {
+#if __has_feature(objc_arc)
+    return self; // tokens are immutable
+#else
     return [self retain]; // tokens are immutable
+#endif
 }
 
 

@@ -44,46 +44,66 @@ void PKReleaseSubparserTree(PKParser *p) {
         PKCollectionParser *c = (PKCollectionParser *)p;
         NSArray *subs = c.subparsers;
         if (subs) {
+#if !__has_feature(objc_arc)
             [subs retain];
+#endif
             c.subparsers = nil;
             for (PKParser *s in subs) {
                 PKReleaseSubparserTree(s);
             }
+#if !__has_feature(objc_arc)
             [subs release];
+#endif
         }
     } else if ([p isMemberOfClass:[PKRepetition class]]) {
         PKRepetition *r = (PKRepetition *)p;
 		PKParser *sub = r.subparser;
         if (sub) {
+#if !__has_feature(objc_arc)
             [sub retain];
+#endif
             r.subparser = nil;
             PKReleaseSubparserTree(sub);
+#if !__has_feature(objc_arc)
             [sub release];
+#endif
         }
     } else if ([p isMemberOfClass:[PKNegation class]]) {
         PKNegation *n = (PKNegation *)p;
 		PKParser *sub = n.subparser;
         if (sub) {
+#if !__has_feature(objc_arc)
             [sub retain];
+#endif
             n.subparser = nil;
             PKReleaseSubparserTree(sub);
+#if !__has_feature(objc_arc)
             [sub release];
+#endif
         }
     } else if ([p isMemberOfClass:[PKDifference class]]) {
         PKDifference *d = (PKDifference *)p;
 		PKParser *sub = d.subparser;
         if (sub) {
+#if !__has_feature(objc_arc)
             [sub retain];
+#endif
             d.subparser = nil;
             PKReleaseSubparserTree(sub);
+#if !__has_feature(objc_arc)
             [sub release];
+#endif
         }
 		PKParser *m = d.minus;
         if (m) {
+#if !__has_feature(objc_arc)
             [m retain];
+#endif
             d.minus = nil;
             PKReleaseSubparserTree(m);
+#if !__has_feature(objc_arc)
             [m release];
+#endif
         }
     }
 }
@@ -136,8 +156,13 @@ void PKReleaseSubparserTree(PKParser *p) {
 - (void)parser:(PKParser *)p didMatchNegation:(PKAssembly *)a;
 
 @property (nonatomic, retain) PKGrammarParser *grammarParser;
+#if __has_feature(objc_arc)
+@property (nonatomic, retain) id assembler;
+@property (nonatomic, retain) id preassembler;
+#else
 @property (nonatomic, assign) id assembler;
 @property (nonatomic, assign) id preassembler;
+#endif
 @property (nonatomic, retain) NSMutableDictionary *parserTokensTable;
 @property (nonatomic, retain) NSMutableDictionary *parserClassTable;
 @property (nonatomic, retain) NSMutableDictionary *selectorTable;
@@ -149,13 +174,21 @@ void PKReleaseSubparserTree(PKParser *p) {
 @implementation PKParserFactory
 
 + (PKParserFactory *)factory {
+#if __has_feature(objc_arc)
+    return [[PKParserFactory alloc] init];
+#else
     return [[[PKParserFactory alloc] init] autorelease];
+#endif
 }
 
 
 - (id)init {
     if (self = [super init]) {
+#if __has_feature(objc_arc)
+        self.grammarParser = [[PKGrammarParser alloc] initWithAssembler:self];
+#else
         self.grammarParser = [[[PKGrammarParser alloc] initWithAssembler:self] autorelease];
+#endif
         self.equals  = [PKToken tokenWithTokenType:PKTokenTypeSymbol stringValue:@"=" floatValue:0.0];
         self.curly   = [PKToken tokenWithTokenType:PKTokenTypeSymbol stringValue:@"{" floatValue:0.0];
         self.paren   = [PKToken tokenWithTokenType:PKTokenTypeSymbol stringValue:@"(" floatValue:0.0];
@@ -175,7 +208,9 @@ void PKReleaseSubparserTree(PKParser *p) {
     self.equals = nil;
     self.curly = nil;
     self.paren = nil;
+#if !__has_feature(objc_arc)
     [super dealloc];
+#endif
 }
 
 
@@ -233,7 +268,11 @@ void PKReleaseSubparserTree(PKParser *p) {
             NSString *domain = name ? name : @"PKGrammarException";
 
             // convert to NSError
+#if __has_feature(objc_arc)
+            NSError *err = [NSError errorWithDomain:domain code:47 userInfo:[userInfo copy]];
+#else
             NSError *err = [NSError errorWithDomain:domain code:47 userInfo:[[userInfo copy] autorelease]];
+#endif
             *outError = err;
         } else {
             [ex raise];
@@ -297,7 +336,9 @@ void PKReleaseSubparserTree(PKParser *p) {
         }
     }
 
+#if !__has_feature(objc_arc)
     [src release];
+#endif
     
     return target;
 }
@@ -518,7 +559,9 @@ void PKReleaseSubparserTree(PKParser *p) {
 
         PKParser *p = [[NSClassFromString(className) alloc] init];
         [parserTokensTable setObject:p forKey:parserName];
+#if !__has_feature(objc_arc)
         [p release];
+#endif
         
         p = [self expandParser:p fromTokenArray:obj];
         p.name = parserName;

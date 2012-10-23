@@ -58,7 +58,9 @@
     if (!child) {
         child = [[PKSymbolNode alloc] initWithParent:p character:c];
         [p->children setObject:child forKey:key];
+#if !__has_feature(objc_arc)
         [child release];
+#endif
     }
 
     NSString *rest = nil;

@@ -29,7 +29,11 @@
 @implementation PKNegation
 
 + (PKNegation *)negationWithSubparser:(PKParser *)s {
+#if __has_feature(objc_arc)
+    return [[self alloc] initWithSubparser:s];
+#else
     return [[[self alloc] initWithSubparser:s] autorelease];
+#endif
 }
 
 
@@ -45,7 +49,9 @@
 - (void)dealloc {
     self.subparser = nil;
     self.difference = nil;
+#if !__has_feature(objc_arc)
     [super dealloc];
+#endif
 }
 
 

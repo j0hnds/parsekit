@@ -35,7 +35,11 @@ static NSString * const PKAssemblyDefaultDelimiter = @"/";
 @implementation PKAssembly
 
 + (PKAssembly *)assemblyWithString:(NSString *)s {
+#if __has_feature(objc_arc)
+    return [[self alloc] initWithString:s];
+#else
     return [[[self alloc] initWithString:s] autorelease];
+#endif
 }
 
 
@@ -58,18 +62,32 @@ static NSString * const PKAssemblyDefaultDelimiter = @"/";
     self.string = nil;
     self.target = nil;
     self.defaultDelimiter = nil;
+#if !__has_feature(objc_arc)
     [super dealloc];
+#endif
 }
 
 
 - (id)copyWithZone:(NSZone *)zone {
     // use of NSAllocateObject() below is a *massive* optimization over calling the designated initializer -initWithString: here.
     // this line (and this method in general) is *vital* to the overall performance of the framework. dont fuck with it.
+#if __has_feature(objc_arc)
+    PKAssembly *a = [[[self class] alloc] init];
+#else
     PKAssembly *a = NSAllocateObject([self class], 0, zone);
+#endif
     a->stack = [stack mutableCopyWithZone:zone];
+#if __has_feature(objc_arc)
+    a->string = string;
+#else
     a->string = [string retain];
+#endif
     if (defaultDelimiter) {
+#if __has_feature(objc_arc)
+        a->defaultDelimiter = defaultDelimiter;
+#else
         a->defaultDelimiter = [defaultDelimiter retain];
+#endif
     } else {
         a->defaultDelimiter = nil;
     }
@@ -162,7 +180,11 @@ static NSString * const PKAssemblyDefaultDelimiter = @"/";
 - (id)pop {
     id result = nil;
     if (![self isStackEmpty]) {
+#if __has_feature(objc_arc)
+        result = [stack lastObject];
+#else
         result = [[[stack lastObject] retain] autorelease];
+#endif
         [stack removeLastObject];
     }
     return result;
@@ -220,7 +242,11 @@ static NSString * const PKAssemblyDefaultDelimiter = @"/";
     [s appendString:@"^"];
     [s appendString:[self remainingObjectsJoinedByString:d]];
     
+#if __has_feature(objc_arc)
+    return [s copy];
+#else
     return [[s copy] autorelease];
+#endif
 }
 
 @synthesize stack;

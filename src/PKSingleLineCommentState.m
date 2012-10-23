@@ -50,7 +50,9 @@
 - (void)dealloc {
     self.startMarkers = nil;
     self.currentStartMarker = nil;
+#if !__has_feature(objc_arc)
     [super dealloc];
+#endif
 }
 
 
