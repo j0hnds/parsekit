@@ -45,15 +45,11 @@
 
 
 - (BOOL)qualifies:(id)obj {
-#if __has_feature(objc_arc)
-    return FALSE;
-#else
     PKToken *tok = (PKToken *)obj;
     
     NSRange r = NSMakeRange(0, [tok.stringValue length]);
     
     return NSEqualRanges(r, [tok.stringValue rangeOfRegex:self.string options:(uint32_t)options inRange:r capture:0 error:nil]);
-#endif
 }
 
 @end
